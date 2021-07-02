@@ -1,11 +1,10 @@
 import tkinter as tk
-import sqlite3
 import funciones_crud as fcrud
 from tkinter import *
 from tkinter import messagebox
 
 raiz = Tk();
-raiz.title("CRUD App");
+raiz.title("CRUD APP");
 # PERMITIMOS MANIPULAR EL TAMAÑO DE LA VENTANA
 raiz.resizable(1,1);
 raiz.geometry("400x400");
@@ -24,6 +23,16 @@ CREO Y VINCULO LAS VARIABLES STRINGVAR A LOS CUADROS DE TEXTO.
 De esta forma, puedo manipular la información de los campos usando las variables.
 '''
 # ----------------------------- FUNCIONES PARA VENTANAS EMERGENTES, MENÚ Y BOTONES ----------------------------------
+
+def validacion_campos_vacios():
+    if len(cuadroNombre.get()) == 0 or len(cuadroPass.get()) == 0 or len(cuadroApellido.get()) == 0 or len(cuadroDireccion.get()) == 0:
+        return False;
+    return True;
+
+def validacion_id_vacio():
+    if len(cuadroID.get()) == 0:
+        return False;
+    return True;
 
 def borrarCampos():
     cuadroID.delete(0, tk.END);
@@ -46,32 +55,92 @@ def menuAyudaAcerca():
     messagebox.showinfo("Acerca de...", "Esta aplicación ha sido desarrollada para aprender a programar en Python.");
 
 def crear_registro():
-    fcrud.log_app("Creando registro");
-    
-    campos = (cuadroNombre.get(), cuadroPass.get(), cuadroApellido.get(), cuadroDireccion.get(), cuadroComentarios.get('1.0', tk.END));
-    query = "INSERT INTO CRUD VALUES(NULL,?,?,?,?,?)";
 
-    try:
-        fcrud.ejecutar_slq(query, campos);
+    if validacion_campos_vacios() == True:
 
-        fcrud.log_app("Registro creado con éxito");
-        return (messagebox.showinfo("Creación registro", "Registro creado con éxito"));
-    
-    except:
-        fcrud.log_app("Error al crear registro. Es posible que ya exista un registro con la misma contraseña");
-        return (messagebox.showwarning("Creación registro", "Error al crear registro. Es posible que ya exista un registro con la misma contraseña"));
+        fcrud.log_app("Creando registro");
+        
+        campos = (cuadroNombre.get(), cuadroPass.get(), cuadroApellido.get(), cuadroDireccion.get(), cuadroComentarios.get('1.0', tk.END));
+        query = "INSERT INTO CRUD VALUES(NULL,?,?,?,?,?)";
+
+        try:
+            fcrud.ejecutar_slq(query, campos);
+
+            fcrud.log_app("Registro creado con éxito");
+            return (messagebox.showinfo("Creación registro", "Registro creado con éxito"));
+        
+        except:
+            fcrud.log_app("Error al crear registro. Es posible que ya exista un registro con la misma contraseña");
+            return (messagebox.showwarning("Creación registro", "Error al crear registro. Es posible que ya exista un registro con la misma contraseña"));
+    else:
+        fcrud.log_app("Los campos Nombre, Password, Apellidos y Dirección son obligatorios");
+        return (messagebox.showwarning("Campos vacíos", "Error al crear registro. Es posible que haya campos obligatorios vacíos"));
 
 def leer_registro():
-    #TRYEXCEPT : NO ENCUENTRO O ES POSIBLE QUE NO HAYA BBDD CREADA
-    pass
+    if validacion_id_vacio() == True:
+        fcrud.log_app("Mostrando registro");
+        
+        campos = (cuadroID.get());
+        query = "SELECT * FROM CRUD WHERE ID = (?)";
+
+        try:
+            id_buscar = fcrud.ejecutar_slq(query, campos).fetchone();
+            nombre.set(id_buscar[1]);
+            passw.set(id_buscar[2]);
+            apellidos.set(id_buscar[3]);
+            direccion.set(id_buscar[4]);
+            cuadroComentarios.insert("1.0", id_buscar[5]);
+ 
+            fcrud.log_app("Registro mostrado con éxito");
+        
+        except:
+            fcrud.log_app("Error al mostrar registro.");
+            return (messagebox.showwarning("Mostrar registro", "Error al mostrar registro."));
+    else:
+        fcrud.log_app("Sin el campo ID no puedo buscar");
+        return (messagebox.showwarning("Campos vacíos", "Error al leer registro. Es posible que el campo ID esté vacío"));
 
 def actualizar_registro():
-    #TRYEXCEPT : NO ENCUENTRO O ES POSIBLE QUE NO HAYA BBDD CREADA
-    pass
+    if validacion_id_vacio() == True:
+        fcrud.log_app("Actualizando registro");
+        
+        campos = (cuadroNombre.get(), cuadroPass.get(), cuadroApellido.get(), cuadroDireccion.get(), cuadroComentarios.get('1.0', tk.END), cuadroID.get());
+        query = "UPDATE CRUD SET NOMBRE = (?), PASSWORD = (?), APELLIDOS = (?), DIRECCIÓN = (?), COMENTARIOS = (?) WHERE ID = (?)";
+
+        try:
+            fcrud.ejecutar_slq(query, campos);
+
+            fcrud.log_app("Registro actualizado con éxito");
+            return (messagebox.showinfo("Actualizar registro", "Registro actualizado con éxito"));
+        
+        except:
+            fcrud.log_app("Error al actualizar registro.");
+            return (messagebox.showwarning("Actualizar registro", "Error al actualizar registro."));
+
+    else:
+        fcrud.log_app("Sin el campo ID no puedo buscar");
+        return (messagebox.showwarning("Campos vacíos", "Error al actualizar registro. Es posible que el campo ID esté vacío"));
 
 def borrar_registro():
-    #TRYEXCEPT : NO ENCUENTRO O ES POSIBLE QUE NO HAYA BBDD CREADA
-    pass
+    if validacion_id_vacio() == True:
+        fcrud.log_app("Eliminando registro");
+        
+        campos = (cuadroID.get());
+        query = "DELETE FROM CRUD WHERE ID = (?)";
+
+        try:
+            fcrud.ejecutar_slq(query, campos);
+
+            fcrud.log_app("Registro eliminado con éxito");
+            return (messagebox.showinfo("Eliminar registro", "Registro eliminado con éxito"));
+        
+        except:
+            fcrud.log_app("Error al eliminar registro.");
+            return (messagebox.showwarning("Eliminar registro", "Error al eliminar registro."));
+
+    else:
+        fcrud.log_app("Sin el campo ID no puedo buscar");
+        return (messagebox.showwarning("Campos vacíos", "Error al eliminar registro. Es posible que el campo ID esté vacío"));
 
 # ----------------------------- BARRA MENÚ Y VENTANAS EMERGENTES -------------------------------------------------
 
@@ -92,11 +161,11 @@ menuCRUD = Menu(barraMenu, tearoff = 0);
 barraMenu.add_cascade(label = "CRUD", menu = menuCRUD);
 menuCRUD.add_command(label = "Crear", command = crear_registro);
 menuCRUD.add_separator();
-menuCRUD.add_command(label = "Leer");
+menuCRUD.add_command(label = "Leer", command=leer_registro);
 menuCRUD.add_separator();
-menuCRUD.add_command(label = "Actualizar");
+menuCRUD.add_command(label = "Actualizar", command=actualizar_registro);
 menuCRUD.add_separator();
-menuCRUD.add_command(label = "Eliminar");
+menuCRUD.add_command(label = "Eliminar", command=borrar_registro);
 
 menuAyuda = Menu(barraMenu, tearoff = 0);
 barraMenu.add_cascade(label = "Ayuda", menu = menuAyuda);
@@ -184,14 +253,13 @@ frameBotones.pack(side = BOTTOM);
 botonCreate = Button(frameBotones, text = "Create", command = crear_registro);
 botonCreate.pack(side = LEFT, padx = 10, pady = 10);
 
-botonRead = Button(frameBotones, text = "Read");
+botonRead = Button(frameBotones, text = "Read", command=leer_registro);
 botonRead.pack(side = LEFT, padx = 10, pady = 10);
 
-botonUpdate = Button(frameBotones, text = "Update");
+botonUpdate = Button(frameBotones, text = "Update", command=actualizar_registro);
 botonUpdate.pack(side = LEFT, padx = 10, pady = 10);
 
-botonDelete = Button(frameBotones, text = "Delete");
+botonDelete = Button(frameBotones, text = "Delete", command=borrar_registro);
 botonDelete.pack(side = LEFT, padx = 10, pady = 10);
-
 
 raiz.mainloop();

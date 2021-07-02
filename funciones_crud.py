@@ -12,7 +12,7 @@ def log_app(mensaje):
 def ejecutar_slq(query, parametros = ()):
     log_app("Ejecutando query");
 
-    with sqlite3.connect("Interface_CRUD") as conexion_bbdd:
+    with sqlite3.connect("crud_db") as conexion_bbdd:
         cursor = conexion_bbdd.cursor();
         ejecutar = cursor.execute(query, parametros);
         conexion_bbdd.commit();
