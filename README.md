@@ -1,6 +1,6 @@
 # crud_tkinter_project
 
-Este es mi primer proyecto de Python, y lo he desarrollado para practicar con las librerías Tkinter y Sqlite3.
+Este es mi primer proyecto de Python, y lo he desarrollado para practicar con las librerías #Tkinter y #Sqlite3.
 
 Se trata de una aplicación sencilla que realiza las funciones de Crear, Leer, Actualizar y Eliminar.
 
