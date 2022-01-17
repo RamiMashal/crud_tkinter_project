@@ -6,7 +6,7 @@ Se trata de una aplicación sencilla que realiza las funciones de Crear, Leer, A
 
 Para la visualización de la base de datos puedes descargar DB Browser (Sqlite).
 
-##########################################
+---
 
 This is my first Python project, and I have developed it to practice with the Tkinter and Sqlite3 libraries.
 
